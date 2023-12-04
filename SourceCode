@@ -1,0 +1,114 @@
+create database cs157a;
+use cs157a;
+
+
+
+-- Create tables
+CREATE TABLE Advisors (
+  ID int PRIMARY KEY,  
+  Name varchar(50) NOT NULL,
+  Email varchar(100),
+  Phone varchar(20)
+);
+
+
+CREATE TABLE Students (
+  ID int PRIMARY KEY,
+  Name varchar(50) NOT NULL,
+  Major varchar(50), 
+  Address varchar(100),
+  Email varchar(50),
+  Phone varchar(20),
+  AdvisorID int,
+  FOREIGN KEY (AdvisorID) REFERENCES Advisors(ID)
+);
+
+CREATE TABLE Instructors (
+  ID int PRIMARY KEY,  
+  Name varchar(50) NOT NULL,
+  Email varchar(100),
+  Phone varchar(20)  
+); 
+
+
+CREATE TABLE Courses (
+  Code int PRIMARY KEY, 
+  Title varchar(100) NOT NULL,  
+  Description text,
+  Credits int, 
+  InstructorID int,
+  FOREIGN KEY (InstructorID) REFERENCES Instructors(ID)  
+);
+
+
+
+
+
+CREATE TABLE Enrollments (
+  StudentID int, 
+  CourseCode int,
+  Grade varchar(2),
+  PRIMARY KEY(StudentID, CourseCode),
+  FOREIGN KEY (StudentID) REFERENCES Students(ID),
+  FOREIGN KEY (CourseCode) REFERENCES Courses(Code)
+);
+
+
+-- Populate sample data
+
+
+INSERT INTO Advisors VALUES (1, 'John Advisor', 'john.advisor@email.com', '123-456-7890');
+INSERT INTO Advisors VALUES (2, 'Jane Advisor', 'jane.advisor@email.com', '987-654-3210');
+
+
+INSERT INTO Students VALUES (1, 'John Doe', 'Computer Science', '1 College Ave', 'john@email.com', '908-555-1234', 1);
+INSERT INTO Students VALUES (2, 'Jane Smith', 'Engineering', '2 University St', 'jane@email.com', '987-123-4567', 1);
+
+
+INSERT INTO Instructors VALUES (1, 'Professor Smith', 'prof.smith@email.com', '111-222-3333');
+INSERT INTO Instructors VALUES (2, 'Professor Johnson', 'prof.johnson@email.com', '444-555-6666');
+
+
+INSERT INTO Courses VALUES (1, 'Database Systems', 'Fundamentals of database design...', 3, 1);
+INSERT INTO Courses VALUES (2, 'Computer Networks', 'Introduction to computer networks...', 4, 2);
+
+
+INSERT INTO Enrollments VALUES (1, 1, 'A');
+INSERT INTO Enrollments VALUES (2, 2, 'B');
+
+
+
+
+-- Create view
+CREATE VIEW student AS
+SELECT S.ID, S.Name, S.Major, S.Address, S.Email, S. Phone, S.AdvisorID, E.CourseCode, E.Grade
+FROM Students AS S, Enrollments AS E
+WHERE S.ID=E.StudentID ;
+
+
+CREATE VIEW Instructor AS
+SELECT C.Code, C.Title, C.Description, C.Credits, C.instructorID, E.CourseCode
+FROM Courses AS C, Enrollments AS E 
+WHERE C.Code = E.CourseCode;
+
+CREATE VIEW Admin AS
+SELECT S.ID, S.name , S.major  , I.email , E.StudentID
+FROM Students as S, Instructors as I, Enrollments as E
+WHERE S.ID = E.StudentID;
+
+
+
+-- Example query
+SELECT s.Name, c.Title, e.Grade 
+FROM Students s JOIN Enrollments e 
+  ON s.ID = e.StudentID
+     JOIN Courses c
+     ON e.CourseCode = c.Code;
+
+
+
+
+
+
+
+
